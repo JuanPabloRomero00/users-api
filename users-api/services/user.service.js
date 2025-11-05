@@ -1,7 +1,32 @@
 const User = require('../models/User');
-const bcrypt = require('bcryptjs');
-const jwtService = require('../../gateway-api/services/jwt.service');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const sendMailer = require('../services/sendMailer');
+
+// JWT utility functions
+const jwtService = {
+  generateToken: (payload) => {
+    return jwt.sign(payload, process.env.JWT_SECRET, { 
+      expiresIn: process.env.JWT_EXPIRES_IN || '7d' 
+    });
+  },
+  
+  generateRefreshToken: (payload) => {
+    return jwt.sign(payload, process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET, { 
+      expiresIn: '30d' 
+    });
+  },
+  
+  generateResetToken: (payload) => {
+    return jwt.sign(payload, process.env.JWT_SECRET, { 
+      expiresIn: '1h' 
+    });
+  },
+  
+  verifyResetToken: (token) => {
+    return jwt.verify(token, process.env.JWT_SECRET);
+  }
+};
 
 
 exports.registerUser = async (userData) => {

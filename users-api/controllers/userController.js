@@ -1,4 +1,4 @@
-const userService = require('../services/user.Service');
+const userService = require('../services/user.service');
 
 // Registro público, role: user por defecto
 exports.register = async (req, res, next) => {

@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const { number } = require('zod');
 
 const userSchema = new mongoose.Schema({
   nombre: { type: String, required: true },
