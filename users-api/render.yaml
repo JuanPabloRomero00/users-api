@@ -8,4 +8,6 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
+      - key: GATEWAY_API_URL
+        value: https://gateway-api-lztd.onrender.com
     healthCheckPath: /

@@ -1,13 +1,48 @@
 const express = require('express');
 const cors = require('cors');
-
 const app = express();
 
-// CORS configuration for Gateway API communication
+
+// Configuracion de CORS para arquitectura de Gateway centralizado
+const allowedOrigins = [
+  'https://gateway-api-lztd.onrender.com',
+  process.env.GATEWAY_API_URL
+].filter(Boolean);
+
+
+// Uso de credenciales solo para orígenes confiables
 app.use(cors({
-  origin: process.env.GATEWAY_API_URL || 'http://localhost:3000',
-  credentials: true
+  origin: function (origin, callback) {
+    if (!origin) {
+      return callback(null, true);
+    }
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      console.log('CORS blocked origin:', origin);
+      callback(new Error('Not allowed by CORS policy'));
+    }
+  },
+
+
+  // Permitir credentials solo para orígenes confiables
+  credentials: function(req, callback) {
+    const trustedForCredentials = [
+      'https://gateway-api-lztd.onrender.com'
+    ];
+    const origin = req.headers.origin;
+    if (!origin) {
+      return callback(null, false);
+    }
+    const allowCredentials = trustedForCredentials.includes(origin);
+    callback(null, allowCredentials);
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-API-Key'],
+  exposedHeaders: ['X-Total-Count'],
+  maxAge: 86400 // 24 hours
 }));
+
 
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
@@ -19,19 +54,24 @@ app.get('/', (req, res) => {
   res.status(200).json({ 
     message: 'Users API is running successfully!', 
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development'
+    status: 'healthy'
   });
 });
 
+
+// User routes
 const userRoutes = require('./routes/user.Routes');
 app.use('/api/users', userRoutes);
 
 
+// Error handling middleware
+app.use('*', (req, res, next) => {
+  const error = new Error('Route not found');
+  error.status = 404;
+  next(error);
+});
+
 const errorHandler = require('./middlewares/error.middleware');
 app.use(errorHandler);
-
-app.use('*', (req, res) => {
-  res.status(404).json({ error: 'Route not found' });
-});
 
 module.exports = app;
