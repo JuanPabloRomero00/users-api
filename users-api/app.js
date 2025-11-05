@@ -7,7 +7,7 @@ const app = express();
 
 app.use(helmet());
 app.use(cors({
-  origin: process.env.FRONTEND_URL || process.env.GATEWAY_API_URL || 'http://localhost:3000',
+  origin: process.env.GATEWAY_API_URL || 'http://localhost:3000',
   credentials: true
 }));
 
