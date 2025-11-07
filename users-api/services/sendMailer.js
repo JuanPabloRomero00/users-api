@@ -27,7 +27,9 @@ exports.sendResetEmail = async (email, token, nombre = '') => {
     // Validar que las credenciales de Gmail estén configuradas
     console.log('Verificando credenciales Gmail...');
     console.log('GMAIL_USER presente:', !!process.env.GMAIL_USER);
+    console.log('GMAIL_USER valor (parcial):', process.env.GMAIL_USER ? process.env.GMAIL_USER.substring(0, 5) + '***' : 'undefined');
     console.log('GMAIL_PASS presente:', !!process.env.GMAIL_PASS);
+    console.log('GMAIL_PASS longitud:', process.env.GMAIL_PASS ? process.env.GMAIL_PASS.length : 0);
     
     if (!process.env.GMAIL_USER || !process.env.GMAIL_PASS) {
       console.error('ERROR: Gmail credentials no configuradas');
