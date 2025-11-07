@@ -1,7 +1,22 @@
 const nodemailer = require('nodemailer');
 
-// Configuración específica para Gmail
-const createGmailTransporter = () => {
+// Configuración para Resend (alternativa a Gmail que funciona en Render)
+// Resend usa SMTP sobre TLS y no es bloqueado por firewalls
+const createEmailTransporter = () => {
+  // Si tenemos credenciales de Resend, usarlas (recomendado para producción)
+  if (process.env.RESEND_API_KEY) {
+    return nodemailer.createTransport({
+      host: 'smtp.resend.com',
+      port: 465,
+      secure: true,
+      auth: {
+        user: 'resend',
+        pass: process.env.RESEND_API_KEY
+      }
+    });
+  }
+  
+  // Fallback a Gmail (para desarrollo local)
   return nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -22,27 +37,39 @@ exports.sendResetEmail = async (email, token, nombre = '') => {
   console.log('Nombre usuario:', nombre || 'No proporcionado');
   
   try {
-    // Validar que las credenciales de Gmail estén configuradas
-    console.log('Verificando credenciales Gmail...');
-    console.log('GMAIL_USER presente:', !!process.env.GMAIL_USER);
-    console.log('GMAIL_USER valor (parcial):', process.env.GMAIL_USER ? process.env.GMAIL_USER.substring(0, 5) + '***' : 'undefined');
-    console.log('GMAIL_PASS presente:', !!process.env.GMAIL_PASS);
-    console.log('GMAIL_PASS longitud:', process.env.GMAIL_PASS ? process.env.GMAIL_PASS.length : 0);
+    // Detectar qué servicio estamos usando
+    const usingResend = !!process.env.RESEND_API_KEY;
+    console.log('Servicio de email:', usingResend ? 'Resend' : 'Gmail');
     
-    if (!process.env.GMAIL_USER || !process.env.GMAIL_PASS) {
-      console.error('ERROR: Gmail credentials no configuradas');
-      return false;
+    if (usingResend) {
+      console.log('RESEND_API_KEY presente:', true);
+      console.log('RESEND_API_KEY longitud:', process.env.RESEND_API_KEY.length);
+    } else {
+      console.log('GMAIL_USER presente:', !!process.env.GMAIL_USER);
+      console.log('GMAIL_USER valor (parcial):', process.env.GMAIL_USER ? process.env.GMAIL_USER.substring(0, 5) + '***' : 'undefined');
+      console.log('GMAIL_PASS presente:', !!process.env.GMAIL_PASS);
+      console.log('GMAIL_PASS longitud:', process.env.GMAIL_PASS ? process.env.GMAIL_PASS.length : 0);
+      
+      if (!process.env.GMAIL_USER || !process.env.GMAIL_PASS) {
+        console.error('ERROR: Gmail credentials no configuradas');
+        return false;
+      }
     }
 
-    console.log('Creando transporter Gmail...');
-    const transporter = createGmailTransporter();
+    console.log('Creando transporter...');
+    const transporter = createEmailTransporter();
     
     console.log('Generando URL de reset...');
     const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password?token=${token}`;
     console.log('URL generada:', resetUrl);
     
+    // Determinar el remitente basado en el servicio
+    const fromEmail = process.env.RESEND_API_KEY 
+      ? 'onboarding@resend.dev' // Email de prueba de Resend
+      : process.env.GMAIL_USER;
+    
     const mailOptions = {
-      from: `"CarwashFreaks" <${process.env.GMAIL_USER}>`,
+      from: `"CarwashFreaks" <${fromEmail}>`,
       to: email,
       subject: 'Solicitud de recuperación de contraseña',
       text: `
