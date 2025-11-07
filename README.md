@@ -2,7 +2,7 @@
 
 Una API REST para gestión de usuarios construida con Node.js, Express y MongoDB.
 
-## 🚀 Características
+## Características
 
 - Autenticación y autorización con JWT
 - CRUD completo de usuarios
@@ -11,7 +11,7 @@ Una API REST para gestión de usuarios construida con Node.js, Express y MongoDB
 - Manejo de errores
 - Envío de emails
 
-## 🛠 Tecnologías
+## Tecnologías
 
 - **Backend**: Node.js, Express.js
 - **Base de datos**: MongoDB con Mongoose
@@ -19,7 +19,7 @@ Una API REST para gestión de usuarios construida con Node.js, Express y MongoDB
 - **Validación**: Express Validator
 - **Testing**: Jest, Supertest
 
-## 📦 Instalación
+## Instalación
 
 1. Clona el repositorio:
 ```bash
@@ -50,7 +50,7 @@ npm start
 - `npm run dev` - Inicia el servidor en modo desarrollo
 - `npm test` - Ejecuta las pruebas
 
-## 📚 API Endpoints
+## API Endpoints
 
 ### Usuarios
 - `POST /api/users/register` - Registro de usuario
@@ -58,7 +58,7 @@ npm start
 - `GET /api/users/profile` - Obtener perfil (requiere autenticación)
 - `PUT /api/users/profile` - Actualizar perfil (requiere autenticación)
 
-## 🤝 Contribución
+## Contribución
 
 1. Fork el proyecto
 2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
@@ -66,6 +66,6 @@ npm start
 4. Push a la rama (`git push origin feature/AmazingFeature`)
 5. Abre un Pull Request
 
-## 📄 Licencia
+## Licencia
 
 Este proyecto está bajo la Licencia MIT.
