@@ -84,7 +84,7 @@ exports.forgotPassword = async (email) => {
     throw error;
   }
   const token = jwtService.generateResetToken({ id: user._id });
-  await sendMailer.sendResetEmail(email, token);
+  await sendMailer.sendResetEmail(email, token, user.nombre);
   return { message: 'Reset email sent' };
 };
 

@@ -1,6 +1,68 @@
-// services/sendMailer.js
-exports.sendResetEmail = async (email, token) => {
-  // Simulación de envío de email
-  // Mock: aquí se simula el envío de email de reset
-  return true;
+const nodemailer = require('nodemailer');
+
+// Configuración específica para Gmail como proveedor SMTP
+const createGmailTransporter = () => {
+  return nodemailer.createTransporter({
+    host: 'smtp.gmail.com',
+    port: 587,
+    secure: false,
+    auth: {
+      user: process.env.GMAIL_USER,
+      pass: process.env.GMAIL_PASS
+    }
+  });
+};
+
+// Función para enviar email de recuperación de contraseña
+exports.sendResetEmail = async (email, token, nombre = '') => {
+  try {
+    // Validar que las credenciales de Gmail estén configuradas
+    if (!process.env.GMAIL_USER || !process.env.GMAIL_PASS) {
+      console.error('Gmail credentials no configuradas');
+      return false;
+    }
+
+    const transporter = createGmailTransporter();
+    const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password?token=${token}`;
+    
+    const mailOptions = {
+      from: `"CarwashFreaks" <${process.env.GMAIL_USER}>`,
+      to: email,
+      subject: 'Solicitud de recuperación de contraseña',
+      text: `
+Hola${nombre ? ' ' + nombre : ''},
+
+Recibimos una solicitud para restablecer la contraseña de tu cuenta en CarwashFreaks.
+
+Para continuar, haz clic en el siguiente enlace o cópialo en tu navegador:
+${resetUrl}
+
+Si no solicitaste este cambio, puedes ignorar este correo. Tu contraseña actual seguirá siendo válida.
+
+Por seguridad, este enlace expirará en 1 hora.
+
+Saludos cordiales,
+El equipo de CarwashFreaks
+      `.trim(),
+      html: `
+        <p>Hola${nombre ? ' ' + nombre : ''},</p>
+        <p>Recibimos una solicitud para <strong>restablecer la contraseña</strong> de tu cuenta en <b>CarwashFreaks</b>.</p>
+        <p>Para continuar, haz clic en el siguiente enlace o cópialo en tu navegador:</p>
+        <p><a href="${resetUrl}" style="color:#1976d2;">${resetUrl}</a></p>
+        <p style="color:#888;font-size:0.95em;">
+          Si no solicitaste este cambio, puedes ignorar este correo. Tu contraseña actual seguirá siendo válida.<br>
+          Por seguridad, este enlace expirará en <b>1 hora</b>.
+        </p>
+        <p><b>El equipo de CarwashFreaks</b></p>
+      `
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    console.log('Email enviado exitosamente');
+    return true;
+    
+  } catch (error) {
+    console.error('Error al enviar email:', error.message);
+    return false;
+  }
 };
