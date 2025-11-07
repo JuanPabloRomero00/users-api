@@ -3,20 +3,7 @@ const nodemailer = require('nodemailer');
 // Configuración para Resend (alternativa a Gmail que funciona en Render)
 // Resend usa SMTP sobre TLS y no es bloqueado por firewalls
 const createEmailTransporter = () => {
-  // Si tenemos credenciales de Resend, usarlas (recomendado para producción)
-  if (process.env.RESEND_API_KEY) {
-    return nodemailer.createTransport({
-      host: 'smtp.resend.com',
-      port: 465,
-      secure: true,
-      auth: {
-        user: 'resend',
-        pass: process.env.RESEND_API_KEY
-      }
-    });
-  }
-  
-  // Fallback a Gmail (para desarrollo local)
+  // Solo Gmail SMTP como fallback local
   return nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -104,15 +91,47 @@ El equipo de CarwashFreaks
       `
     };
 
-  console.log('Preparando envío de email...');
-  console.log('MailOptions:', mailOptions);
-  console.log('Transporter config:', transporter && transporter.options ? transporter.options : transporter);
-  console.log('Llamando a transporter.sendMail...');
-  const info = await transporter.sendMail(mailOptions);
-  console.log('SUCCESS: Email enviado exitosamente');
-  console.log('Message ID:', info.messageId);
-  console.log('=== FIN ENVIO EMAIL ===');
-  return true;
+    if (usingResend) {
+      // Usar API HTTP de Resend
+      console.log('Enviando email con Resend API HTTP...');
+      const { sendResendEmail } = require('./resendClient');
+      try {
+        const result = await sendResendEmail({
+          from: mailOptions.from,
+          to: mailOptions.to,
+          subject: mailOptions.subject,
+          html: mailOptions.html,
+          text: mailOptions.text
+        });
+        console.log('SUCCESS: Email enviado con Resend API HTTP');
+        console.log('Resend response:', result);
+        console.log('=== FIN ENVIO EMAIL ===');
+        return true;
+      } catch (error) {
+        console.error('ERROR CRITICO AL ENVIAR EMAIL (Resend API):');
+        console.error('Mensaje:', error.message);
+        if (error.response) {
+          console.error('Resend Response:', error.response);
+        }
+        if (error.code) {
+          console.error('Codigo:', error.code);
+        }
+        console.error('Stack:', error.stack);
+        console.log('=== FIN ENVIO EMAIL (ERROR) ===');
+        return false;
+      }
+    } else {
+      // Fallback a Gmail SMTP
+      console.log('Preparando envío de email...');
+      console.log('MailOptions:', mailOptions);
+      console.log('Transporter config:', transporter && transporter.options ? transporter.options : transporter);
+      console.log('Llamando a transporter.sendMail...');
+      const info = await transporter.sendMail(mailOptions);
+      console.log('SUCCESS: Email enviado exitosamente');
+      console.log('Message ID:', info.messageId);
+      console.log('=== FIN ENVIO EMAIL ===');
+      return true;
+    }
     
   } catch (error) {
     console.error('ERROR CRITICO AL ENVIAR EMAIL:');
