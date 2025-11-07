@@ -94,12 +94,20 @@ exports.forgotPassword = async (email) => {
   const token = jwtService.generateResetToken({ id: user._id });
   console.log('Token generado:', !!token);
   
-  console.log('Llamando a sendMailer.sendResetEmail...');
-  const emailResult = await sendMailer.sendResetEmail(email, token, user.nombre);
-  console.log('Resultado del envio:', emailResult);
+  console.log('Enviando email en background (sin bloquear)...');
+  // Enviar email en background sin bloquear la respuesta
+  sendMailer.sendResetEmail(email, token, user.nombre)
+    .then(result => {
+      console.log('Email enviado exitosamente en background:', result);
+    })
+    .catch(error => {
+      console.error('Error enviando email en background:', error.message);
+    });
+  
+  console.log('Respondiendo inmediatamente al frontend...');
   console.log('=== FIN FORGOT PASSWORD SERVICE ===');
   
-  return { message: 'Reset email sent' };
+  return { message: 'Si el email existe, se enviará un enlace de recuperación' };
 };
 
 

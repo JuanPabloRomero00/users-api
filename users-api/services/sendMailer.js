@@ -6,6 +6,9 @@ const createGmailTransporter = () => {
     host: 'smtp.gmail.com',
     port: 587,
     secure: false,
+    connectionTimeout: 10000, // 10 segundos
+    greetingTimeout: 5000,    // 5 segundos
+    socketTimeout: 10000,     // 10 segundos
     auth: {
       user: process.env.GMAIL_USER,
       pass: process.env.GMAIL_PASS
