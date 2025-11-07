@@ -56,7 +56,7 @@ exports.sendResetEmail = async (email, token, nombre = '') => {
     
     // Determinar el remitente basado en el servicio
     const fromEmail = process.env.RESEND_API_KEY 
-      ? 'onboarding@resend.dev' // Email de prueba de Resend
+      ? 'noreply@carwashfreaks.com'
       : process.env.GMAIL_USER;
     
     const mailOptions = {
