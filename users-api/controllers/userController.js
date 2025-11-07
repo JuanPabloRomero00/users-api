@@ -37,7 +37,9 @@ exports.login = async (req, res, next) => {
 // Recuperación de contraseña (pública)
 exports.forgotPassword = async (req, res, next) => {
   try {
-    const result = await userService.forgotPassword(req.body.email);
+  console.log('== [API] POST /forgot-password recibido ==');
+  console.log('Body:', req.body);
+  const result = await userService.forgotPassword(req.body.email);
     res.json(result);
   } catch (err) {
     next(err);
