@@ -10,10 +10,25 @@ const connectDB = async () => {
 
     const conn = await mongoose.connect(mongoURI);
     
-    console.log(`MongoDB Connected: ${conn.connection.host}`);
-    console.log('Conexión exitosa a MongoDB');
+    console.log('MongoDB conectado exitosamente');
+    console.log(`Render DB Connection Status: SUCCESS at ${new Date().toISOString()}`);
+
+    // Event listeners para monitorear la conexión
+    mongoose.connection.on('error', () => {
+      console.error('Error de conexión MongoDB');
+    });
+
+    mongoose.connection.on('disconnected', () => {
+      console.warn('MongoDB desconectado');
+    });
+
+    mongoose.connection.on('reconnected', () => {
+      console.log('MongoDB reconectado');
+    });
+
   } catch (error) {
-    console.error('Error de conexión a la base de datos:', error);
+    console.error('Error de conexión a MongoDB');
+    console.log('Render DB Connection Status: FAILED at', new Date().toISOString());
     process.exit(1);
   }
 };

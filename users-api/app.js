@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const mongoose = require('mongoose');
 const app = express();
 
 
@@ -51,10 +52,17 @@ app.use(express.urlencoded({ extended: true }));
 
 // Health check endpoint for Render
 app.get('/', (req, res) => {
+  const dbState = mongoose.connection.readyState;
+  const isDbConnected = dbState === 1;
+  
   res.status(200).json({ 
     message: 'Users API is running successfully!', 
     timestamp: new Date().toISOString(),
-    status: 'healthy'
+    status: 'healthy',
+    database: {
+      connected: isDbConnected,
+      status: isDbConnected ? 'connected' : 'disconnected'
+    }
   });
 });
 
