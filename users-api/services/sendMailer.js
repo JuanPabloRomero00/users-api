@@ -15,15 +15,28 @@ const createGmailTransporter = () => {
 
 // Función para enviar email de recuperación de contraseña
 exports.sendResetEmail = async (email, token, nombre = '') => {
+  console.log('=== INICIO ENVIO EMAIL ===');
+  console.log('Email destino:', email);
+  console.log('Token presente:', !!token);
+  console.log('Nombre usuario:', nombre || 'No proporcionado');
+  
   try {
     // Validar que las credenciales de Gmail estén configuradas
+    console.log('Verificando credenciales Gmail...');
+    console.log('GMAIL_USER presente:', !!process.env.GMAIL_USER);
+    console.log('GMAIL_PASS presente:', !!process.env.GMAIL_PASS);
+    
     if (!process.env.GMAIL_USER || !process.env.GMAIL_PASS) {
-      console.error('Gmail credentials no configuradas');
+      console.error('ERROR: Gmail credentials no configuradas');
       return false;
     }
 
+    console.log('Creando transporter Gmail...');
     const transporter = createGmailTransporter();
+    
+    console.log('Generando URL de reset...');
     const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password?token=${token}`;
+    console.log('URL generada:', resetUrl);
     
     const mailOptions = {
       from: `"CarwashFreaks" <${process.env.GMAIL_USER}>`,
@@ -57,12 +70,19 @@ El equipo de CarwashFreaks
       `
     };
 
+    console.log('Enviando email...');
     const info = await transporter.sendMail(mailOptions);
-    console.log('Email enviado exitosamente');
+    console.log('SUCCESS: Email enviado exitosamente');
+    console.log('Message ID:', info.messageId);
+    console.log('=== FIN ENVIO EMAIL ===');
     return true;
     
   } catch (error) {
-    console.error('Error al enviar email:', error.message);
+    console.error('ERROR CRITICO AL ENVIAR EMAIL:');
+    console.error('Mensaje:', error.message);
+    console.error('Codigo:', error.code);
+    console.error('Stack:', error.stack);
+    console.log('=== FIN ENVIO EMAIL (ERROR) ===');
     return false;
   }
 };
