@@ -1,18 +1,16 @@
 const nodemailer = require('nodemailer');
 
-// Configuración específica para Gmail como proveedor SMTP
+// Configuración específica para Gmail
 const createGmailTransporter = () => {
-  return nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 465, // Puerto SSL
-    secure: true, // SSL
-    connectionTimeout: 10000,
-    greetingTimeout: 5000,
-    socketTimeout: 10000,
+  return nodemailer.createTransporter({
+    service: 'gmail',
     auth: {
       user: process.env.GMAIL_USER,
       pass: process.env.GMAIL_PASS
-    }
+    },
+    connectionTimeout: 60000,
+    greetingTimeout: 30000,
+    socketTimeout: 60000,
   });
 };
 
