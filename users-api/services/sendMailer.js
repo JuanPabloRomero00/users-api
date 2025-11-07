@@ -38,6 +38,8 @@ exports.sendResetEmail = async (email, token, nombre = '') => {
   
   try {
     console.log('== INICIO sendResetEmail ==');
+    // Generar la URL de reset antes de cualquier uso
+    const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password?token=${token}`;
     console.log('Datos recibidos:', { nombre, email, resetUrl });
     // Detectar qué servicio estamos usando
     const usingResend = !!process.env.RESEND_API_KEY;
@@ -61,9 +63,9 @@ exports.sendResetEmail = async (email, token, nombre = '') => {
     console.log('Creando transporter...');
     const transporter = createEmailTransporter();
     
-    console.log('Generando URL de reset...');
-    const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password?token=${token}`;
-    console.log('URL generada:', resetUrl);
+  console.log('Generando URL de reset...');
+  // URL ya generada antes, solo loguear
+  console.log('URL generada:', resetUrl);
     
     // Determinar el remitente basado en el servicio
     const fromEmail = process.env.RESEND_API_KEY 
