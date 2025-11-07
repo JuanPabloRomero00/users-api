@@ -37,6 +37,8 @@ exports.sendResetEmail = async (email, token, nombre = '') => {
   console.log('Nombre usuario:', nombre || 'No proporcionado');
   
   try {
+    console.log('== INICIO sendResetEmail ==');
+    console.log('Datos recibidos:', { nombre, email, resetUrl });
     // Detectar qué servicio estamos usando
     const usingResend = !!process.env.RESEND_API_KEY;
     console.log('Servicio de email:', usingResend ? 'Resend' : 'Gmail');
@@ -100,17 +102,25 @@ El equipo de CarwashFreaks
       `
     };
 
-    console.log('Enviando email...');
-    const info = await transporter.sendMail(mailOptions);
-    console.log('SUCCESS: Email enviado exitosamente');
-    console.log('Message ID:', info.messageId);
-    console.log('=== FIN ENVIO EMAIL ===');
-    return true;
+  console.log('Preparando envío de email...');
+  console.log('MailOptions:', mailOptions);
+  console.log('Transporter config:', transporter && transporter.options ? transporter.options : transporter);
+  console.log('Llamando a transporter.sendMail...');
+  const info = await transporter.sendMail(mailOptions);
+  console.log('SUCCESS: Email enviado exitosamente');
+  console.log('Message ID:', info.messageId);
+  console.log('=== FIN ENVIO EMAIL ===');
+  return true;
     
   } catch (error) {
     console.error('ERROR CRITICO AL ENVIAR EMAIL:');
     console.error('Mensaje:', error.message);
-    console.error('Codigo:', error.code);
+    if (error.response) {
+      console.error('SMTP Response:', error.response);
+    }
+    if (error.code) {
+      console.error('Codigo:', error.code);
+    }
     console.error('Stack:', error.stack);
     console.log('=== FIN ENVIO EMAIL (ERROR) ===');
     return false;
