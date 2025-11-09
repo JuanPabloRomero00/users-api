@@ -77,37 +77,15 @@ exports.loginUser = async ({ email, password }) => {
 
 
 exports.forgotPassword = async (email) => {
-  console.log('=== FORGOT PASSWORD SERVICE ===');
-  console.log('Email solicitado:', email);
-  
   const user = await User.findOne({ email });
-  console.log('Usuario encontrado:', !!user);
-  
   if (!user) {
-    console.log('ERROR: Email no encontrado en la base de datos');
     const error = new Error('Email not found');
     error.status = 404;
     throw error;
   }
-  
-  console.log('Generando token de reset...');
   const token = jwtService.generateResetToken({ id: user._id });
-  console.log('Token generado:', !!token);
-  
-  console.log('Enviando email en background (sin bloquear)...');
-  // Enviar email en background sin bloquear la respuesta
-  sendMailer.sendResetEmail(email, token, user.nombre)
-    .then(result => {
-      console.log('Email enviado exitosamente en background:', result);
-    })
-    .catch(error => {
-      console.error('Error enviando email en background:', error.message);
-    });
-  
-  console.log('Respondiendo inmediatamente al frontend...');
-  console.log('=== FIN FORGOT PASSWORD SERVICE ===');
-  
-  return { message: 'Si el email existe, se enviará un enlace de recuperación' };
+  // El frontend debe usar este token para enviar el email de recuperación
+  return { token, nombre: user.nombre, email: user.email };
 };
 
 
