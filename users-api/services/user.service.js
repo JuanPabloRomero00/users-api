@@ -84,8 +84,7 @@ exports.forgotPassword = async (email) => {
     throw error;
   }
   const token = jwtService.generateResetToken({ id: user._id });
-  // El frontend debe usar este token para enviar el email de recuperación
-  return { token, nombre: user.nombre, email: user.email };
+  return { token, name: user.nombre, email: user.email };
 };
 
 
