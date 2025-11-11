@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 
 // JWT utility functions
 const jwtService = {
@@ -82,22 +83,29 @@ exports.forgotPassword = async (email) => {
     error.status = 404;
     throw error;
   }
-  const token = jwtService.generateResetToken({ id: user._id });
+  const token = crypto.randomBytes(32).toString('hex');
+  user.resetPasswordToken = token;
+  user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+  await user.save();
   return { token, name: user.nombre, email: user.email };
 };
 
 
 exports.resetPassword = async (token, newPassword) => {
-  const payload = jwtService.verifyResetToken(token);
-  const user = await User.findById(payload.id);
+  const user = await User.findOne({
+    resetPasswordToken: token,
+    resetPasswordExpires: { $gt: Date.now() }
+  });
   if (!user) {
-    const error = new Error('User not found');
-    error.status = 404;
+    const error = new Error('Invalid or expired token');
+    error.status = 400;
     throw error;
   }
   user.password = await bcrypt.hash(newPassword, 10);
+  user.resetPasswordToken = undefined;
+  user.resetPasswordExpires = undefined;
   await user.save();
-  return { message: 'Password updated' };
+  return { message: 'Password updated successfully' };
 };
 
 
