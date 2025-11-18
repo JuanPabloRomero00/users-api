@@ -1,6 +1,6 @@
 const userService = require('../services/user.service');
 
-// Registro público, role: user por defecto
+// Public registry, role: default user
 exports.register = async (req, res, next) => {
   try {
     const user = await userService.registerUser(req.body);
@@ -10,7 +10,7 @@ exports.register = async (req, res, next) => {
   }
 };
 
-// Registro de administrador con clave secreta
+// Admin registration with secret key
 exports.registerAdmin = async (req, res, next) => {
   try {
     const secret = req.body.secret;
@@ -34,7 +34,7 @@ exports.login = async (req, res, next) => {
   }
 };
 
-// Recuperación de contraseña (pública)
+// Password recovery (public)
 exports.forgotPassword = async (req, res, next) => {
   try {
     const result = await userService.forgotPassword(req.body.email);
@@ -44,7 +44,7 @@ exports.forgotPassword = async (req, res, next) => {
   }
 };
 
-// Reset de contraseña
+// Password reset
 exports.resetPassword = async (req, res, next) => {
   try {
     const result = await userService.resetPassword(req.body.token, req.body.newPassword);
@@ -54,7 +54,7 @@ exports.resetPassword = async (req, res, next) => {
   }
 };
 
-// Listar usuarios (solo admin)
+// List users (admin only)
 exports.getAllUsers = async (req, res, next) => {
   try {
     const users = await userService.getAllUsers(req.user);
@@ -64,7 +64,7 @@ exports.getAllUsers = async (req, res, next) => {
   }
 };
 
-// Editar usuario (solo admin)
+// Edit user (admin only)
 exports.updateUser = async (req, res, next) => {
   try {
     const user = await userService.updateUser(req.user, req.params.id, req.body);
@@ -74,7 +74,7 @@ exports.updateUser = async (req, res, next) => {
   }
 };
 
-// Eliminar usuario (solo admin)
+// Delete user (admin only)
 exports.deleteUser = async (req, res, next) => {
   try {
     await userService.deleteUser(req.user, req.params.id);
@@ -84,7 +84,7 @@ exports.deleteUser = async (req, res, next) => {
   }
 };
 
-// Obtener datos del perfil del usuario autenticado
+// Get authenticated user's profile data
 exports.getMe = async (req, res, next) => {
   try {
     const user = await userService.getMe(req.user);

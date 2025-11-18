@@ -13,7 +13,7 @@ const connectDB = async () => {
     console.log('MongoDB conectado exitosamente');
     console.log(`Render DB Connection Status: SUCCESS at ${new Date().toISOString()}`);
 
-    // Event listeners para monitorear la conexión
+    // Event listeners to monitor the connection
     mongoose.connection.on('error', () => {
       console.error('Error de conexión MongoDB');
     });

@@ -15,7 +15,7 @@ function authenticateJWT(req, res, next) {
   }
 }
 
-// Middlewares para roles y admin, asumiendo que el usuario ya está autenticado
+// Middleware for roles and admin, assuming the user is already authenticated
 function authorizeAdmin(req, res, next) {
   if (!req.user || req.user.role !== 'admin') {
     return res.status(403).json({ error: 'Forbidden: admin only' });

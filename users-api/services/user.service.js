@@ -28,7 +28,7 @@ const jwtService = {
   }
 };
 
-
+// User registration with user role
 exports.registerUser = async (userData) => {
     const { email, password, nombre, apellido, telefono } = userData;
     const userExists = await User.findOne({ email });
@@ -42,7 +42,7 @@ exports.registerUser = async (userData) => {
   return await user.save();
 };
 
-// Registro de administrador con rol admin
+// Administrator registration with admin role
 exports.registerAdmin = async (userData) => {
   const { email, password, nombre, apellido, telefono } = userData;
   const userExists = await User.findOne({ email });
@@ -56,7 +56,7 @@ exports.registerAdmin = async (userData) => {
   return await user.save();
 };
 
-
+// User login
 exports.loginUser = async ({ email, password }) => {
   const user = await User.findOne({ email });
   if (!user) {
@@ -75,7 +75,7 @@ exports.loginUser = async ({ email, password }) => {
   return { user, accessToken, refreshToken };
 };
 
-
+// Password recovery
 exports.forgotPassword = async (email) => {
   const user = await User.findOne({ email });
   if (!user) {
@@ -90,7 +90,7 @@ exports.forgotPassword = async (email) => {
   return { token, name: user.nombre, email: user.email };
 };
 
-
+// Reset password
 exports.resetPassword = async (token, newPassword) => {
   const user = await User.findOne({
     resetPasswordToken: token,
@@ -108,7 +108,7 @@ exports.resetPassword = async (token, newPassword) => {
   return { message: 'Password updated successfully' };
 };
 
-
+// Admin: Get all users
 exports.getAllUsers = async (requestingUser) => {
   if (requestingUser.role !== 'admin') {
     const error = new Error('Forbidden');
@@ -118,7 +118,7 @@ exports.getAllUsers = async (requestingUser) => {
   return await User.find();
 };
 
-
+// Admin: Update user by ID
 exports.updateUser = async (requestingUser, userId, updateData) => {
   if (requestingUser.role !== 'admin') {
     const error = new Error('Forbidden');
@@ -137,7 +137,7 @@ exports.updateUser = async (requestingUser, userId, updateData) => {
   return user;
 };
 
-
+// Admin: Delete user by ID
 exports.deleteUser = async (requestingUser, userId) => {
   if (requestingUser.role !== 'admin') {
     const error = new Error('Forbidden');
@@ -152,7 +152,7 @@ exports.deleteUser = async (requestingUser, userId) => {
   }
 };
 
-
+// Get user data by id (authenticated user or admin only)
 exports.getMe = async (requestingUser) => {
   const user = await User.findById(requestingUser.id);
   if (!user) {

@@ -3,28 +3,28 @@ frontend/node_modules/
 backend/node_modules/
 users-api/node_modules/
 
-# Entornos y variables sensibles
+# Sensitive environments and variables
 backend/.env
 frontend/.env
 
-# Archivos de logs
+# Log files
 *.log
 logs/
 
-# Archivos de sistema
+# System files
 .DS_Store
 Thumbs.db
 
-# Build y dist
+# Build and dist
 frontend/dist/
 backend/dist/
 
-# Otros
+# Others
 coverage/
 .vscode/
 .idea/
 
-# Exclusiones también en la raíz
+# Exclusions also in the root
 .env
 dist/
 

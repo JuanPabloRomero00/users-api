@@ -4,14 +4,14 @@ const mongoose = require('mongoose');
 const app = express();
 
 
-// Configuracion de CORS para arquitectura de Gateway centralizado
+// CORS configuration for centralized gateway architecture
 const allowedOrigins = [
   'https://gateway-api-lztd.onrender.com',
   process.env.GATEWAY_API_URL
 ].filter(Boolean);
 
 
-// Uso de credenciales solo para orígenes confiables
+// Use credentials only for trusted origins
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin) {
@@ -26,7 +26,7 @@ app.use(cors({
   },
 
 
-  // Permitir credentials solo para orígenes confiables
+  // Allow credentials only for trusted origins
   credentials: function(req, callback) {
     const trustedForCredentials = [
       'https://gateway-api-lztd.onrender.com'
